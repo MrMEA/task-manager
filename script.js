@@ -1,4 +1,3 @@
-
 let tasks = [];
 
 // Laden beim Start
@@ -18,7 +17,10 @@ function addTask() {
 
     if (taskText === "") return;
 
-    tasks.push(taskText);
+    tasks.push({
+        text: taskText,
+        done: false
+    });
 
     saveTasks();
     renderTasks();
@@ -34,11 +36,33 @@ function renderTasks() {
     tasks.forEach((task, index) => {
 
         let li = document.createElement("li");
-        li.textContent = task;
 
-        li.onclick = function () {
+        // Text
+        let span = document.createElement("span");
+        span.textContent = task.text;
+
+        if (task.done) {
+            span.style.textDecoration = "line-through";
+        }
+
+        // Toggle erledigt
+        span.onclick = function () {
+            task.done = !task.done;
+            saveTasks();
+            renderTasks();
+        };
+
+        // Delete Button
+        let btn = document.createElement("button");
+        btn.textContent = "X";
+
+        btn.onclick = function (e) {
+            e.stopPropagation();
             deleteTask(index);
         };
+
+        li.appendChild(span);
+        li.appendChild(btn);
 
         list.appendChild(li);
     });
