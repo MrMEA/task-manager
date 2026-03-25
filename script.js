@@ -6,6 +6,7 @@ let currentView = "list";
 document.addEventListener("DOMContentLoaded", () => {
   initCalendar();
   setupDragAndDrop();
+   render();
 });
 
 /* CREATE */
@@ -57,6 +58,7 @@ function render() {
 
     animateTask(div);
   });
+   setupDragAndDrop();
 }
 
 /* DRAG DROP */
@@ -105,7 +107,8 @@ function initCalendar() {
   const calendarEl = document.getElementById("calendar");
 
   calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: "dayGridMonth"
+    initialView: "dayGridMonth" ,
+    height: "auto"
   });
 
   calendar.render();
@@ -154,4 +157,6 @@ function openTaskModal() {
 
 function closeModal() {
   document.getElementById("taskModal").classList.add("hidden");
+  document.getElementById("title").value = "";
+  document.getElementById("dueDate").value = "";
 }
