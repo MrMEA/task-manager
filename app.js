@@ -1,85 +1,89 @@
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-function save(){localStorage.setItem("tasks",JSON.stringify(tasks));}
+const taskList = document.getElementById("taskList");
+const form = document.getElementById("taskForm");
 
-function showView(v){
-document.getElementById("tasksView").classList.add("hidden");
-document.getElementById("calendarView").classList.add("hidden");
-document.getElementById("statsView").classList.add("hidden");
-
-document.getElementById(v+"View").classList.remove("hidden");
-if(v==="calendar") renderCalendar();
-if(v==="stats") renderChart();
-}
-
-function addTask(){
-let text=document.getElementById("taskInput").value;
-let date=document.getElementById("deadline").value;
-
-tasks.push({text,date});
-save();
-renderTasks();
-}
-
-function renderTasks(){
-let list=document.getElementById("taskList");
-list.innerHTML="";
-
-tasks.forEach((t,i)=>{
-let div=document.createElement("div");
-div.className="task";
-div.draggable=true;
-
-div.ondragstart=e=>e.dataTransfer.setData("i",i);
-
-div.innerText=t.text+" ("+(t.date||"")+")";
-
-list.appendChild(div);
-});
-}
-
-function renderCalendar(){
-let cal=document.getElementById("calendar");
-cal.innerHTML="";
-
-for(let d=1;d<=30;d++){
-let day=document.createElement("div");
-day.className="day";
-day.innerText=d;
-
-day.ondragover=e=>e.preventDefault();
-
-day.ondrop=e=>{
-let i=e.dataTransfer.getData("i");
-tasks[i].date="2026-03-"+String(d).padStart(2,"0");
-save();
-renderCalendar();
+document.getElementById("newTaskBtn").onclick = () => {
+  form.classList.toggle("hidden");
 };
 
-tasks.forEach(t=>{
-if(t.date && t.date.endsWith("-"+String(d).padStart(2,"0"))){
-let el=document.createElement("div");
-el.innerText=t.text;
-day.appendChild(el);
-}
-});
-
-cal.appendChild(day);
-}
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-function renderChart(){
-let c=document.getElementById("chart");
-let ctx=c.getContext("2d");
+function addTask() {
+  const text = document.getElementById("taskInput").value;
+  const priority = document.getElementById("priority").value;
+  const deadline = document.getElementById("deadline").value;
 
-let total=tasks.length;
-let done=0;
+  if (!text) return;
 
-ctx.clearRect(0,0,300,300);
+  tasks.push({
+    text,
+    priority,
+    deadline,
+    done: false,
+    created: new Date().toISOString()
+  });
 
-ctx.fillStyle="white";
-ctx.fillText("Tasks: "+total,10,20);
-ctx.fillText("Done: "+done,10,40);
+  document.getElementById("taskInput").value = "";
+  saveTasks();
+  renderTasks();
+}
+
+function toggleDone(index) {
+  tasks[index].done = !tasks[index].done;
+
+  if (tasks[index].done) {
+    new Notification("Task erledigt: " + tasks[index].text);
+  }
+
+  saveTasks();
+  renderTasks();
+}
+
+function deleteTask(index) {
+  tasks.splice(index, 1);
+  saveTasks();
+  renderTasks();
+}
+
+function updateProgress() {
+  const done = tasks.filter(t => t.done).length;
+  const total = tasks.length || 1;
+  const percent = (done / total) * 100;
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+function renderTasks() {
+  const filter = document.getElementById("filter").value;
+  taskList.innerHTML = "";
+
+  let filtered = tasks;
+
+  if (filter === "done") filtered = tasks.filter(t => t.done);
+  if (filter === "open") filtered = tasks.filter(t => !t.done);
+
+  filtered.forEach((task, index) => {
+    const div = document.createElement("div");
+    div.className = `task ${task.priority} ${task.done ? "done" : ""}`;
+
+    div.innerHTML = `
+      <div onclick="toggleDone(${index})">
+        <strong>${task.text}</strong><br>
+        <small>${task.deadline || ""}</small>
+      </div>
+      <button onclick="deleteTask(${index})">❌</button>
+    `;
+
+    taskList.appendChild(div);
+  });
+
+  updateProgress();
+}
+
+if ("Notification" in window) {
+  Notification.requestPermission();
 }
 
 renderTasks();

@@ -1,46 +1,51 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Task Manager Ultra</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>Task Manager Pro++</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="app">
+<div class="container">
+  <aside class="sidebar">
+    <h2>⚡ TaskPro++</h2>
+    <button id="newTaskBtn">+ New Task</button>
 
-<aside class="sidebar">
-<h2>⚡ UltraTasks</h2>
+    <div class="progress">
+      <p>Progress</p>
+      <div class="bar"><div id="progressBar"></div></div>
+    </div>
 
-<button onclick="showView('tasks')">📋 Tasks</button>
-<button onclick="showView('calendar')">📅 Kalender</button>
-<button onclick="showView('stats')">📊 Charts</button>
+    <div class="filter">
+      <p>Filter</p>
+      <select id="filter" onchange="renderTasks()">
+        <option value="all">All</option>
+        <option value="done">Done</option>
+        <option value="open">Open</option>
+      </select>
+    </div>
+  </aside>
 
-</aside>
+  <main class="main">
+    <h1>Meine Aufgaben</h1>
 
-<main class="content">
+    <div id="taskForm" class="hidden">
+      <input type="text" id="taskInput" placeholder="Neue Aufgabe...">
 
-<div id="tasksView">
-<h1>Tasks</h1>
+      <select id="priority">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
 
-<input id="taskInput" placeholder="Neue Aufgabe">
-<input type="date" id="deadline">
-<button onclick="addTask()">Add</button>
+      <input type="date" id="deadline">
 
-<div id="taskList"></div>
-</div>
+      <button onclick="addTask()">Add</button>
+    </div>
 
-<div id="calendarView" class="hidden">
-<h1>Kalender</h1>
-<div id="calendar"></div>
-</div>
-
-<div id="statsView" class="hidden">
-<h1>Stats</h1>
-<canvas id="chart"></canvas>
-</div>
-
-</main>
+    <div id="taskList"></div>
+  </main>
 </div>
 
 <script src="app.js"></script>
