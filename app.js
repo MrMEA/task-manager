@@ -1,223 +1,85 @@
-/* =======================
-   STATE
-======================= */
-let tasks = [];
-let calendar = null;
-let currentView = "list";
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+function save(){localStorage.setItem("tasks",JSON.stringify(tasks));}
 
-/* =======================
-   INIT
-======================= */
-document.addEventListener("DOMContentLoaded", () => {
-  setupEvents();
-  initCalendar();
-  render();
+function showView(v){
+document.getElementById("tasksView").classList.add("hidden");
+document.getElementById("calendarView").classList.add("hidden");
+document.getElementById("statsView").classList.add("hidden");
+
+document.getElementById(v+"View").classList.remove("hidden");
+if(v==="calendar") renderCalendar();
+if(v==="stats") renderChart();
+}
+
+function addTask(){
+let text=document.getElementById("taskInput").value;
+let date=document.getElementById("deadline").value;
+
+tasks.push({text,date});
+save();
+renderTasks();
+}
+
+function renderTasks(){
+let list=document.getElementById("taskList");
+list.innerHTML="";
+
+tasks.forEach((t,i)=>{
+let div=document.createElement("div");
+div.className="task";
+div.draggable=true;
+
+div.ondragstart=e=>e.dataTransfer.setData("i",i);
+
+div.innerText=t.text+" ("+(t.date||"")+")";
+
+list.appendChild(div);
+});
+}
+
+function renderCalendar(){
+let cal=document.getElementById("calendar");
+cal.innerHTML="";
+
+for(let d=1;d<=30;d++){
+let day=document.createElement("div");
+day.className="day";
+day.innerText=d;
+
+day.ondragover=e=>e.preventDefault();
+
+day.ondrop=e=>{
+let i=e.dataTransfer.getData("i");
+tasks[i].date="2026-03-"+String(d).padStart(2,"0");
+save();
+renderCalendar();
+};
+
+tasks.forEach(t=>{
+if(t.date && t.date.endsWith("-"+String(d).padStart(2,"0"))){
+let el=document.createElement("div");
+el.innerText=t.text;
+day.appendChild(el);
+}
 });
 
-
-/* =======================
-   EVENTS
-======================= */
-function setupEvents() {
-
-  document.querySelectorAll(".nav-btn").forEach(btn =>
-    btn.addEventListener("click", () =>
-      setView(btn.dataset.view, btn)
-    )
-  );
-
-  const newBtn = document.getElementById("newTaskBtn");
-  const closeBtn = document.getElementById("closeModalBtn");
-  const createBtn = document.getElementById("createTaskBtn");
-
-  if (newBtn) newBtn.addEventListener("click", openModal);
-  if (closeBtn) closeBtn.addEventListener("click", closeModal);
-  if (createBtn) createBtn.addEventListener("click", createTask);
-
-  setupDragZones();
+cal.appendChild(day);
+}
 }
 
+function renderChart(){
+let c=document.getElementById("chart");
+let ctx=c.getContext("2d");
 
-/* =======================
-   MODAL
-======================= */
-function openModal() {
-  const modal = document.getElementById("taskModal");
+let total=tasks.length;
+let done=0;
 
-  if (!modal) {
-    console.error("Modal fehlt!");
-    return;
-  }
+ctx.clearRect(0,0,300,300);
 
-  modal.classList.remove("hidden");
+ctx.fillStyle="white";
+ctx.fillText("Tasks: "+total,10,20);
+ctx.fillText("Done: "+done,10,40);
 }
 
-function closeModal() {
-  document.getElementById("taskModal").classList.add("hidden");
-  document.getElementById("title").value = "";
-  document.getElementById("dueDate").value = "";
-}
-
-
-/* =======================
-   TASKS
-======================= */
-function createTask() {
-
-  const title = document.getElementById("title").value;
-  if (!title) return;
-
-  tasks.push({
-    id: Date.now(),
-    title,
-    dueDate: document.getElementById("dueDate").value,
-    priority: document.getElementById("priority").value,
-    status: "todo"
-  });
-
-  closeModal();
-  render();
-}
-
-
-/* =======================
-   RENDER
-======================= */
-function render() {
-
-  ["todo","in_progress","done"].forEach(s =>
-    document.getElementById(s).innerHTML = ""
-  );
-
-  tasks.forEach(task => {
-
-    const el = document.createElement("div");
-    el.className = "task glass " + task.priority;
-    el.draggable = true;
-
-    el.innerHTML = `
-      <strong>${task.title}</strong>
-      <small>${task.dueDate || ""}</small>
-    `;
-
-    el.addEventListener("dragstart", e => {
-      el.classList.add("dragging");
-      e.dataTransfer.setData("id", task.id);
-    });
-
-    el.addEventListener("dragend", () =>
-      el.classList.remove("dragging")
-    );
-
-    document.getElementById(task.status).appendChild(el);
-
-    animate(el);
-  });
-
-  updateCalendar();
-}
-
-
-/* =======================
-   DRAG & DROP
-======================= */
-function setupDragZones() {
-
-  document.querySelectorAll(".dropzone").forEach(zone => {
-
-    zone.addEventListener("dragover", e => {
-      e.preventDefault();
-      zone.classList.add("active");
-    });
-
-    zone.addEventListener("dragleave", () =>
-      zone.classList.remove("active")
-    );
-
-    zone.addEventListener("drop", e => {
-
-      zone.classList.remove("active");
-
-      const id = e.dataTransfer.getData("id");
-      const task = tasks.find(t => t.id == id);
-
-      if (!task) return;
-
-      task.status = zone.parentElement.dataset.status;
-
-      render();
-    });
-  });
-}
-
-
-/* =======================
-   VIEW
-======================= */
-function setView(view, btn) {
-
-  currentView = view;
-
-  document.querySelectorAll(".nav-btn")
-    .forEach(b => b.classList.remove("active"));
-
-  btn.classList.add("active");
-
-  document.getElementById("listView").classList.add("hidden");
-  document.getElementById("calendarView").classList.add("hidden");
-
-  document.getElementById(view + "View")
-    .classList.remove("hidden");
-
-  if (view === "calendar") updateCalendar();
-}
-
-
-/* =======================
-   CALENDAR
-======================= */
-function initCalendar() {
-
-  calendar = new FullCalendar.Calendar(
-    document.getElementById("calendar"),
-    {
-      initialView: "dayGridMonth",
-      height: "auto"
-    }
-  );
-
-  calendar.render();
-}
-
-function updateCalendar() {
-
-  if (!calendar) return;
-
-  calendar.removeAllEvents();
-
-  tasks.forEach(task => {
-    if (task.dueDate) {
-      calendar.addEvent({
-        title: task.title,
-        date: task.dueDate
-      });
-    }
-  });
-}
-
-
-/* =======================
-   ANIMATION
-======================= */
-function animate(el) {
-
-  el.style.opacity = 0;
-  el.style.transform = "translateY(10px)";
-
-  requestAnimationFrame(() => {
-    el.style.transition = "0.3s";
-    el.style.opacity = 1;
-    el.style.transform = "translateY(0)";
-  });
-}
+renderTasks();

@@ -1,80 +1,48 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>TaskFlow Pro</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<title>Task Manager Ultra</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div class="app">
 
-  <aside class="sidebar glass">
-    <h2>TaskFlow</h2>
+<aside class="sidebar">
+<h2>⚡ UltraTasks</h2>
 
-    <button data-view="list" class="nav-btn active">📋 Tasks</button>
-    <button data-view="calendar" class="nav-btn">📅 Calendar</button>
+<button onclick="showView('tasks')">📋 Tasks</button>
+<button onclick="showView('calendar')">📅 Kalender</button>
+<button onclick="showView('stats')">📊 Charts</button>
 
-    <button id="newTaskBtn">+ New Task</button>
-  </aside>
+</aside>
 
-  <main class="main">
+<main class="content">
 
-    <div id="listView">
-      <div class="columns">
+<div id="tasksView">
+<h1>Tasks</h1>
 
-        <div class="column" data-status="todo">
-          <h3>TODO</h3>
-          <div class="dropzone" id="todo"></div>
-        </div>
+<input id="taskInput" placeholder="Neue Aufgabe">
+<input type="date" id="deadline">
+<button onclick="addTask()">Add</button>
 
-        <div class="column" data-status="in_progress">
-          <h3>IN PROGRESS</h3>
-          <div class="dropzone" id="in_progress"></div>
-        </div>
-
-        <div class="column" data-status="done">
-          <h3>DONE</h3>
-          <div class="dropzone" id="done"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <div id="calendarView" class="hidden">
-      <div id="calendar"></div>
-    </div>
-
-  </main>
+<div id="taskList"></div>
 </div>
 
-<!-- MODAL -->
-<div id="taskModal" class="modal hidden">
-  <div class="modal-content glass">
-
-    <h3>Create Task</h3>
-
-    <input id="title" placeholder="Title">
-    <input type="date" id="dueDate">
-
-    <select id="priority">
-      <option value="low">Low</option>
-      <option value="medium">Medium</option>
-      <option value="high">High</option>
-    </select>
-
-    <div class="modal-actions">
-      <button id="createTaskBtn">Create</button>
-      <button id="closeModalBtn">Cancel</button>
-    </div>
-
-  </div>
+<div id="calendarView" class="hidden">
+<h1>Kalender</h1>
+<div id="calendar"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<div id="statsView" class="hidden">
+<h1>Stats</h1>
+<canvas id="chart"></canvas>
+</div>
+
+</main>
+</div>
+
 <script src="app.js"></script>
-
 </body>
 </html>
