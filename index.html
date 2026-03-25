@@ -1,26 +1,83 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Task Manager</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="UTF-8">
+  <title>TaskFlow Pro</title>
 
+  <!-- Calendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
-<div class="container">
+<div class="app">
 
-    <h1>Task Manager</h1>
+  <!-- SIDEBAR -->
+  <aside class="sidebar glass">
+    <h2>TaskFlow</h2>
 
-    <div class="input-area">
-        <input type="text" id="taskInput" placeholder="Neue Aufgabe...">
-        <button onclick="addTask()">+</button>
+    <button onclick="setView('list', event)" class="active">📋 Tasks</button>
+    <button onclick="setView('calendar', event)">📅 Calendar</button>
+
+    <button onclick="openTaskModal()">+ New Task</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- KANBAN -->
+    <div id="listView">
+      <div class="columns">
+
+        <div class="column" data-status="todo">
+          <h3>TODO</h3>
+          <div class="dropzone" id="todo"></div>
+        </div>
+
+        <div class="column" data-status="in_progress">
+          <h3>IN PROGRESS</h3>
+          <div class="dropzone" id="in_progress"></div>
+        </div>
+
+        <div class="column" data-status="done">
+          <h3>DONE</h3>
+          <div class="dropzone" id="done"></div>
+        </div>
+
+      </div>
     </div>
 
-    <ul id="taskList"></ul>
+    <!-- CALENDAR -->
+    <div id="calendarView" class="hidden">
+      <div id="calendar"></div>
+    </div>
 
+  </main>
 </div>
 
+<!-- MODAL -->
+<div id="taskModal" class="modal hidden">
+  <div class="modal-content glass">
+
+    <h3>Create Task</h3>
+
+    <input id="title" placeholder="Title">
+    <input type="date" id="dueDate">
+
+    <select id="priority">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+
+    <button onclick="createTask()">Create</button>
+    <button onclick="closeModal()">Cancel</button>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="script.js"></script>
 
 </body>
