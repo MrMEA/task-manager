@@ -83,7 +83,7 @@ body::before {
 .dropzone {
   min-height: 400px;
   padding: 10px;
-  transition: background 0.2s;
+  transition: 0.2s;
 }
 
 .dropzone.active {
@@ -128,13 +128,31 @@ body::before {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 .hidden {
   display: none;
 }
 
+.nav-btn.active {
+  background: rgba(99,102,241,0.2);
+  border-radius: 10px;
+}
+
+.dropzone.active {
+  background: rgba(99,102,241,0.1);
+}
+
+.task.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+}
+
 .modal-content {
+  backdrop-filter: blur(30px);
+  background: rgba(15,23,42,0.8);
+  border: 1px solid var(--border);
   padding: 20px;
   width: 300px;
   animation: modalIn 0.25s ease forwards;

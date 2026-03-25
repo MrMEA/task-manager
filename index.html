@@ -4,29 +4,24 @@
   <meta charset="UTF-8">
   <title>TaskFlow Pro</title>
 
-  <!-- Calendar -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div class="app">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar glass">
     <h2>TaskFlow</h2>
 
-    <button onclick="setView('list', event)" class="active">📋 Tasks</button>
-    <button onclick="setView('calendar', event)">📅 Calendar</button>
+    <button data-view="list" class="nav-btn active">📋 Tasks</button>
+    <button data-view="calendar" class="nav-btn">📅 Calendar</button>
 
-    <button onclick="openTaskModal()">+ New Task</button>
+    <button id="newTaskBtn">+ New Task</button>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
 
-    <!-- KANBAN -->
     <div id="listView">
       <div class="columns">
 
@@ -48,7 +43,6 @@
       </div>
     </div>
 
-    <!-- CALENDAR -->
     <div id="calendarView" class="hidden">
       <div id="calendar"></div>
     </div>
@@ -71,14 +65,16 @@
       <option value="high">High</option>
     </select>
 
-    <button onclick="createTask()">Create</button>
-    <button onclick="closeModal()">Cancel</button>
+    <div class="modal-actions">
+      <button id="createTaskBtn">Create</button>
+      <button id="closeModalBtn">Cancel</button>
+    </div>
 
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-<script src="script.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>
